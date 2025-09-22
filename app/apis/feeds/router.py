@@ -14,6 +14,14 @@ router = APIRouter(
 	# dependencies=[Depends(get_current_user)]
 )
 
+@router.get("/subscribtions", response_model=List[schemas.FeedRead])
+async def get_all_subscriptions(
+    db: AsyncSession = Depends(get_db),
+    current_user: users_model.User = Depends(get_current_user)
+):
+    result = await service.get_user_feeds(db=db, user=current_user)
+    return result
+
 @router.post("/subscribtions/add", response_model=schemas.FeedRead)
 async def subscribe_to_feed(
     feed_in: schemas.SubscriptionCreate,
@@ -26,10 +34,18 @@ async def subscribe_to_feed(
 
     return feed
 
-@router.post("/article", response_model=List[ParsedArticle])
-async def get_articles_from_url(
-    url: str, 
+@router.delete("/subscribtions/{id}", response_model=schemas.FeedRead)
+async def delete_feed(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: users_model.User = Depends(get_current_user)
 ):
-    res = await feed_parser.parse_rss_feed(url=url)
+    result = await service.delete_feed(db=db, user=current_user, feed_id=id)
     
-    return res
+    if result is None:
+        raise HTTPException(
+			status_code=status.HTTP_400_BAD_REQUEST,
+			detail="Feed id doesn't exist"
+		)
+
+    return result

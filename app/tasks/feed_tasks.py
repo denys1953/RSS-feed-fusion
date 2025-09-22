@@ -26,11 +26,11 @@ def fetch_single_feed_task(feed_id: int):
         new_articles_to_add = []
 
         for article in parsed_articles:
-            print(article.url)
             if str(article.url) not in existing_links:
                 new_article = article_models.Article(
                     title = article.title,
                     url = str(article.url),
+                    source = feed.title,
                     description = article.description,
                     publication_date = article.publication_date,
                     feed_id = feed_id

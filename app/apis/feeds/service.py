@@ -19,10 +19,19 @@ async def get_feed_by_url(db: AsyncSession, url: str) -> models.Feed | None:
     result = await db.execute(query)
     return result.scalar_one_or_none()
 
-async def get_user_feeds(db: AsyncSession, user: user_models.User):
+async def get_user_feeds_id(db: AsyncSession, user: user_models.User):
     query = select(subscription_table.c.feed_id).where(subscription_table.c.user_id == user.id)
     result = await db.execute(query)
     return result.scalars().all()
+
+async def get_user_feeds(db: AsyncSession, user: user_models.User):
+    feeds_id = await get_user_feeds_id(db=db, user=user)
+
+    query = select(models.Feed).where(models.Feed.id.in_(feeds_id))
+    result = await db.execute(query)
+    feeds = result.scalars().all()
+    return feeds
+
 
 async def subscribe_to_feed(db: AsyncSession, feed: schemas.SubscriptionCreate, user: user_models.User):
     url = str(feed.url)
@@ -59,3 +68,17 @@ async def subscribe_to_feed(db: AsyncSession, feed: schemas.SubscriptionCreate, 
     await db.refresh(db_feed)
     
     return db_feed
+
+async def delete_feed(db: AsyncSession, user: user_models.User, feed_id: int):
+    feed_to_remove = await db.get(models.Feed, feed_id)
+
+    if not feed_to_remove:
+        return None
+
+    if feed_to_remove in user.feeds:
+        await db.delete(feed_to_remove)
+        await db.commit()
+    
+    return feed_to_remove
+
+

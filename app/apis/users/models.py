@@ -17,6 +17,7 @@ class User(Base):
     feeds = relationship(
         "Feed",
         secondary=subscription_table,
+        lazy="selectin",
         back_populates="subscribers"
     )
 

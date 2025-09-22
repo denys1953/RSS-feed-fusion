@@ -13,6 +13,13 @@ class Feed(Base):
     subscribers = relationship(
         "User",
         secondary=subscription_table,
+        lazy="selectin",
         back_populates="feeds"
     )
 
+    articles = relationship(
+        "Article", 
+        back_populates="feed",
+        cascade="all, delete-orphan", 
+        passive_deletes=True 
+    )

@@ -9,5 +9,8 @@ class Article(Base):
     title = Column(String)
     description = Column(String, nullable=True)
     url = Column(String)
+    source = Column(String)
     publication_date = Column(DateTime(timezone=True), nullable=False)
-    feed_id = Column(ForeignKey("feeds.id"))
+    feed_id = Column(ForeignKey("feeds.id", ondelete="CASCADE"))
+
+    feed = relationship("Feed", back_populates="articles")
