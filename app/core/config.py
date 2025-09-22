@@ -23,5 +23,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
+    REDIS_HOST: str
+    REDIS_PORT: int
+
 
 settings = Settings()

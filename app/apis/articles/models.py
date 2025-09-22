@@ -9,5 +9,5 @@ class Article(Base):
     title = Column(String)
     description = Column(String, nullable=True)
     url = Column(String)
-    publication_date = Column(DateTime)
+    publication_date = Column(DateTime(timezone=True), nullable=False)
     feed_id = Column(ForeignKey("feeds.id"))

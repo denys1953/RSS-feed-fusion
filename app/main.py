@@ -4,6 +4,8 @@ from fastapi.responses import HTMLResponse
 from app.apis.users.router import router as users_router
 from app.apis.auth.router import router as auth_router
 from app.apis.feeds.router import router as feeds_router
+from app.apis.articles.router import router as articles_router
+
 
 
 swagger_params = {
@@ -21,4 +23,6 @@ async def read_root():
 app.include_router(users_router, prefix="/users", tags=["Users"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(feeds_router, prefix="/feeds", tags=["Feeds"])
+app.include_router(articles_router, prefix="/articles", tags=["Articles"])
+
 

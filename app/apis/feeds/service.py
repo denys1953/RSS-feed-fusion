@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 
+from celery import result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
@@ -18,6 +19,10 @@ async def get_feed_by_url(db: AsyncSession, url: str) -> models.Feed | None:
     result = await db.execute(query)
     return result.scalar_one_or_none()
 
+async def get_user_feeds(db: AsyncSession, user: user_models.User):
+    query = select(subscription_table.c.feed_id).where(subscription_table.c.user_id == user.id)
+    result = await db.execute(query)
+    return result.scalars().all()
 
 async def subscribe_to_feed(db: AsyncSession, feed: schemas.SubscriptionCreate, user: user_models.User):
     url = str(feed.url)
